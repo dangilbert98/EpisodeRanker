@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.Console;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,10 +43,17 @@ public class EpisodesService {
     Show show = getShowDetails(id);
     List<Episode> episodes = new ArrayList<Episode>();
     int num_seasons = show.getNumber_of_seasons();
-    for(int s = 1; s <= num_seasons; s++){
-      int num_eps = show.getSeasons().get(s).getEpisode_count();
-      for(int e = 1; e <= num_eps; e++){
-        episodes.add(getEpisode(id,s,e));
+    for (int s = 1; s <= num_seasons; s++) {
+      int num_eps = 0;
+      List<Show.Season> seasons = show.getSeasons();
+      for (Show.Season season : seasons) {
+        if (season.getSeason_number() == s) {
+          num_eps = season.getEpisode_count();
+          break;
+        }
+      }
+      for (int e = 1; e <= num_eps; e++) {
+        episodes.add(getEpisode(id, s, e));
       }
     }
     if (episodes.size() == 0) throw new EntityNotFoundException("Episode");
@@ -63,7 +71,6 @@ public class EpisodesService {
             + "/episode/"
             + episode_number
             + "?api_key=f8ca671fc5e479fe6b738061a3faa31d&language=en-US";
-
     ResponseEntity<Episode> response =
         restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>("parameters"), Episode.class);
 
