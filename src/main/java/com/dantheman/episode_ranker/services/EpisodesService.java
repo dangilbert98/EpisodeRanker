@@ -3,6 +3,7 @@ package com.dantheman.episode_ranker.services;
 import com.dantheman.episode_ranker.exceptions.EntityNotFoundException;
 import com.dantheman.episode_ranker.models.Episode;
 import com.dantheman.episode_ranker.models.Show;
+import com.dantheman.episode_ranker.repositories.EpisodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -18,10 +19,12 @@ import java.util.List;
 public class EpisodesService {
 
   private RestTemplate restTemplate;
+  private EpisodeRepository episodeRepository;
 
   @Autowired
-  public EpisodesService(RestTemplate restTemplate) {
+  public EpisodesService(RestTemplate restTemplate, EpisodeRepository episodeRepository) {
     this.restTemplate = restTemplate;
+    this.episodeRepository = episodeRepository;
   }
 
   public Show getShowDetails(String id) throws EntityNotFoundException {
@@ -60,6 +63,10 @@ public class EpisodesService {
     return episodes;
   }
 
+  public Episode getEpisodeById(Integer episode_id){
+    return episodeRepository.getById(episode_id);
+  }
+
   public Episode getEpisode(String id, int season_number, int episode_number)
       throws EntityNotFoundException {
 
@@ -76,6 +83,11 @@ public class EpisodesService {
 
     Episode responseBody = response.getBody();
     if (responseBody == null) throw new EntityNotFoundException("Episode");
+
+    if(!episodeRepository.existsById(responseBody.getId())){
+      episodeRepository.save(responseBody);
+    }
+
     return responseBody;
   }
 }
