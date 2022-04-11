@@ -1,8 +1,8 @@
 package com.dantheman.episode_ranker.controllers;
 
 import com.dantheman.episode_ranker.exceptions.EntityNotFoundException;
-import com.dantheman.episode_ranker.models.Episode;
-import com.dantheman.episode_ranker.models.Show;
+import com.dantheman.episode_ranker.models.TV.Episode;
+import com.dantheman.episode_ranker.models.TV.Show;
 import com.dantheman.episode_ranker.services.EpisodesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,13 +22,13 @@ public class EpisodesController {
     }
 
     @GetMapping
-    public ResponseEntity<Show> getShow(@RequestParam String id)
+    public ResponseEntity<Show> getShow(@RequestParam Integer id)
             throws EntityNotFoundException {
     return ResponseEntity.status(HttpStatus.OK).body(episodesService.getShowDetails(id));
     }
 
     @GetMapping("/episodes")
-    public ResponseEntity<List<Episode>> getEpisodes(@RequestParam String id)
+    public ResponseEntity<List<Episode>> getEpisodes(@RequestParam Integer id)
             throws EntityNotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(episodesService.getEpisodes(id));
     }
